@@ -1,0 +1,6 @@
+program RozbudowaneKolkoIKrzyzyk;
+
+
+begin
+end.
+
