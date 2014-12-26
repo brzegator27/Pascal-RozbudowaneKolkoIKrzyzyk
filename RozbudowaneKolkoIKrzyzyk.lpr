@@ -3,6 +3,8 @@ program RozbudowaneKolkoIKrzyzyk;
 uses CRT, Drzewo, ListaPodwojnieWiazana;
 
 type planszaT = array of array of integer;
+//Tablica jednowymiarowa
+type tablicaJ = array of integer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //Oznaczenia w tablicy zawierajacej stan gry:
@@ -153,12 +155,68 @@ begin
 end;
 
 
+//Funkcja sprawdzajaca, czy w totczeniu podanego punktu znajduja sie inne punkty
+//'punktP' - punkt na planszy
+//Zwracane wartosci: 1 - otoczenie istnieje; 0 - otoczenie nie istnieje
+function szukajOtoczenia(plansza : planszaT; punktP : array of integer; wymiaryP : integer) : integer;
+var i1, i2 : integer; b1, b2, b3, b4 : boolean;
+begin
+  //Na poczatku inicjalizujemy zwracana wartosc
+  szukajOtoczenia := 0;
+
+  //Wartosci te beda sprawdzane wielokrotnie, wiec kosztem narzutu pamieci optymalizujemy kod pod wzgledem czasu wykonania
+  //Czy istnieja elementy powyzej danego elementu
+  b1 := (punktP[0] <> 0);
+  //Czy istnieja elementy ponizej
+  b2 := (punktP[0] < wymiaryP - 1);
+  //Czy istnieja elementy z lewej strony
+  b3 := (punktP[1] <> 0);
+  //Czy istnieja elementy z prawej strony
+  b4 := (punktP[1] < wymiaryP - 1);
+
+  //Zaczynamy od elementu znajdujacego sie w lewym, gornym rogu - poruszamy sie zgodnie ze wskazowkami zegara
+  //Sprawdzamy przylegle punkty powyzej
+  if b1 and b3 then if (plansza[punktP[0] - 1, punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b1 then if (plansza[punktP[0] - 1, punktP[1]]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b1 and b4 then if (plansza[punktP[0] - 1, punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+
+  if b4 then if (plansza[punktP[0], punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+
+  //Sprawdzamy pnkty przylegle ponizej
+  if b2 and b4 then if (plansza[punktP[0] + 1, punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b2 then if (plansza[punktP[0] + 1, punktP[1]]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b2 and b3 then if (plansza[punktP[0] + 1, punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+
+  if b3 then if (plansza[punktP[0], punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+end;
 
 //Funkcja sprawdzajaca mozliwe ruchy - podaje jeden wedlug ustalonego schematu
 //Schemat:
 //W pierwszej kolejnosci sprawdzane sa pola w ktorych najblisze sasiedztwo - tj.
 //stykajace sie pola - nie sa puste
+function szukajRuchu(plansza : planszaT; ostatni : array of integer; wymiaryP : integer) : tablicaJ;
+//tablica 'rezultat' zostala utworzona by funkcja mogla przekazac wynik, a tablica 'pomocnicza' by...
+//...moc przekazywac argumenty do funkcji 'szukajOtocznia'
+var i1, i2 : integer; rezultat, pomocnicza : array[0..1] of integer;
+begin
+  //Na poczatek jako zwracany element ustawiamy pierwszy element planszy, na wypadek...
+  //...gdybysmy nie znalexli innego, ktoryby spelanial warunki
+  rezultat[0] := 0; rezultat[1] := 0;
+  szukajRuchu := rezultat;
 
+  for i1 := 0 to wymiaryP - 1 do
+  begin
+    for i2 := 0 to wymiaryP - 1 do
+    begin
+      pomocnicza[0] := i1; pomocnicza[1] := i2;
+      if szukajOtoczenia(plansza, pomocnicza, wymiaryP) = 1 then
+      begin
+        szukajRuchu := pomocnicza;
+        exit;
+      end;
+    end;
+  end;
+end;
 
 
 
@@ -218,6 +276,8 @@ begin
   begin
     wypiszP(plansza, n);
     Writeln('Wygral ', SprawdzP(plansza, n, 3));
+    ruch[0] := 0; ruch[1] := 0;
+    Writeln('Szukamy ruchu: ', (szukajRuchu(plansza, ruch, n))[0], '  ', (szukajRuchu(plansza, ruch, n))[1]);
     Write('Podaj jaki ruch chcesz wykonac: ');
     Read(ruch[0], ruch[1]);
     zmienP(plansza, ruch, 1);
