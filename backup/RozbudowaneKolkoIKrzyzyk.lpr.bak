@@ -80,12 +80,11 @@ begin
   //A na koncu UKOSNE rozlozenie
   //korzystamy z flagi, ktora mowi nam, kiedy przeszlismy juz przez glowna przekatna, a...
   //... tym samym i1
-  flaga := 1;
-  for i1 := 0 to 2 * (wymiaryP - iloscW) do
+  flaga := 0;
+  for i1 := 0 to 1 + 2 * (wymiaryP - iloscW) do
   begin
-    //Gdy dochodzimy do najwiekszsej przekatnej zmieniamy flage:
-    if i1 = 2 * (wymiaryP - iloscW) - 1 then flaga := -1;
-    for i2 := 0 to (wymiaryP - iloscW) -  * flaga
+    if i1 = 0 then flaga := -1;
+    for i2 := 0 to
 
   end;
 
@@ -100,9 +99,6 @@ end;
 
 
 //Funkcja do zarzadzania grafem
-
-
-
 
 //Funkcja zmieniajaca stan planszy
 function zmienP(plansza : planszaT; ruch : array of integer; ktoRuszyl : integer) : integer;
