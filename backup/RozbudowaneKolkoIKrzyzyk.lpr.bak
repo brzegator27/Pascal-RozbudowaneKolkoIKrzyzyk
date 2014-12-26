@@ -9,13 +9,63 @@ type planszaT = array of array of integer;
 //0 - pole puste; 1 - kolko; 2 - krzyzyk
 ////////////////////////////////////////////////////////////////////////////////
 
+
+//Funckaj sprawdzajaca same przekatne
+//i, j - wspolzedne pocztaku przekatnej
+//k = 1, (-1) - mowi, czy sprawdzamy na ukos od lewej do prawej, czy odwrotnie
+function sprawdzPP(plansza : planszaT; wymiaryP : integer; iloscW : integer; i, j, k : integer) : integer;
+var i1, i2 : integer;
+begin
+  sprawdzPP := 0;
+
+  if k = 1 then
+  begin
+    //W zaleznosci ile 'iloscW' sie zmiesci w kolumnie
+    for i1 := 0 to wymiaryP - iloscW - i - j do
+    begin
+      //Aby if w kolejnejnej petli for wykonal sie choc raz
+      sprawdzPP := 4;
+
+      //Sprawdzamy dwojkami
+      for i2 := i1 to iloscW - 2 + i1 do
+      begin
+        if plansza[i + i2, j + i2] = plansza[i + i2 + 1, j + i2 + 1] then
+        begin
+          if sprawdzPP <> 0 then sprawdzPP := plansza[i + i1, j + i1];
+        end else sprawdzPP := 0;
+      end;
+      if sprawdzPP <> 0 then Exit;
+    end;
+  end else
+  begin
+    //W zaleznosci ile 'iloscW' sie zmiesci w kolumnie
+    for i1 := 0 to wymiaryP - iloscW - i - ((wymiaryP - 1) - j) do
+    begin
+      //Aby if w kolejnejnej petli for wykonal sie choc raz
+      sprawdzPP := 4;
+
+      //Sprawdzamy dwojkami
+      for i2 := i1 to iloscW - 2 + i1 do
+      begin
+        //Writeln('[', i + i2, ', ', j - i2, ']  = [', i + i2 + 1, ', ', j - i2 - 1, ']   i2: ', i2);
+        if plansza[i + i2, j - i2] = plansza[i + i2 + 1, j - i2 - 1] then
+        begin
+          if sprawdzPP <> 0 then sprawdzPP := plansza[i + i2, j - i2];
+          //Writeln('    sprawdzPP ', sprawdzPP);
+        end else sprawdzPP := 0;
+      end;
+      if sprawdzPP <> 0 then Exit;
+    end;
+  end;
+end;
+
 //Funkcja sprawdzajaca, cyz ktos wygral
 //wymiaryP - wymiary planszy(obydwa sa takie same, wiec jedna zmienna);
 //iloscW - ilosc wygrywajaca, czyli wymagana dlugosc ciagu takich zamych pol, by byla wygrana, minimalnie wynosi 2(!!!)
 //Funkcja zwraca: 3 - gdy wystapi blad; 1,2 - w zaleznosci kto wygral, 0 - gdy sytuacja jest...
 //...nierozstrzygnieta
 function sprawdzP(plansza : planszaT; wymiaryP : integer; iloscW : integer) : integer;
-var i1, i2, i3, flaga : integer;
+var i1, i2, i3, flaga1, flaga2 : integer;
 begin
   //Zerujemy na wszelki wypadek:
   sprawdzP := 0;
@@ -44,7 +94,7 @@ begin
           if (plansza[i1, i3] = plansza[i1, i3 + 1]) then
           begin
             if sprawdzP <> 0 then sprawdzP := plansza[i1, i3];
-            Writeln('\nsprawdzP ', sprawdzP);
+            //Writeln('\nsprawdzP ', sprawdzP);
           end else
             begin
               sprawdzP := 0;
@@ -65,12 +115,9 @@ begin
 
       for i3 := i2 to i2 + iloscW - 2 do
       begin
-        //Writeln('i1, i2, i3, (i3 + 1): ', i1, i2, i3, i3 +1);
-        //Write('i3: ', i3, '  i1: ', i1);
         if plansza[i3, i1] = plansza[i3 + 1, i1] then
         begin
           if sprawdzP <> 0 then sprawdzP := plansza[i3, i1];
-          //Writeln('    sprawdzP ', sprawdzP);
         end else sprawdzP := 0;
       end;
       if sprawdzP <> 0 then Exit;
@@ -78,17 +125,34 @@ begin
   end;
 
   //A na koncu UKOSNE rozlozenie
-  //korzystamy z flagi, ktora mowi nam, kiedy przeszlismy juz przez glowna przekatna, a...
-  //... tym samym i1
-  flaga := 0;
-  for i1 := 0 to 1 + 2 * (wymiaryP - iloscW) do
+  //Najpierw sprawdzamy glowne przekatne
+  sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, 0, 0, 1);
+  if sprawdzP <> 0 then Exit;
+  sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, 0, wymiaryP - 1, -1);
+  if sprawdzP <> 0 then Exit;
+
+  //Teraz szukamy takich przekatnych, ze sie w nich zmiesci iloscW kratek:
+  //Najpierw te od [0, 1] -> [0, k]...
+  //...i te od [1, 0] -> [k, 0]
+  //Potem te od [0, n-1] -> [0, k]...
+  //...i te od [1, n] -> [k, n]
+  for i1 := 0 to wymiaryP - iloscW - 1 do
   begin
-    if i1 = 0 then flaga := -1;
-    for i2 := 0 to
+    sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, 0, i1 + 1, 1);
+    if sprawdzP <> 0 then Exit;
 
+    sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, i1 + 1, 0, 1);
+    if sprawdzP <> 0 then Exit;
+
+    sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, 0, wymiaryP - 2 - i1, -1);
+    if sprawdzP <> 0 then Exit;
+
+    sprawdzP := sprawdzPP(plansza, wymiaryP, iloscW, i1 + 1, wymiaryP - 1, -1);
+    if sprawdzP <> 0 then Exit;
   end;
-
 end;
+
+
 
 //Funkcja sprawdzajaca mozliwe ruchy - podaje jeden wedlug ustalonego schematu
 //Schemat:
@@ -99,6 +163,9 @@ end;
 
 
 //Funkcja do zarzadzania grafem
+
+
+
 
 //Funkcja zmieniajaca stan planszy
 function zmienP(plansza : planszaT; ruch : array of integer; ktoRuszyl : integer) : integer;
@@ -130,7 +197,7 @@ end;
 //Zmienne globalne:
 var
   //Wymiar planszy:
-  n : integer;
+  n, k : integer;
   //Zmienna na przechowywanie dycyzji gracza o jego ruchu:
   ruch : array[0..1] of integer;
   //Korzen drzewa - globalnie bo nie chcemy po kazdym ruchu ktorego z graczy tworzyc go od nowa
@@ -144,18 +211,19 @@ begin
   n := 4;
   Setlength(plansza, n, n);
 
-  n := 6;
+  k := 6;
 
 
 
-  while n <> 0 do
+  while k <> 0 do
   begin
+    wypiszP(plansza, n);
+    Writeln('Wygral ', SprawdzP(plansza, n, 3));
     Write('Podaj jaki ruch chcesz wykonac: ');
     Read(ruch[0], ruch[1]);
     zmienP(plansza, ruch, 1);
-    wypiszP(plansza, 4);
-    Writeln('Wygral ', SprawdzP(plansza, 4, 3));
-    n := n - 1;
+
+    k := k - 1;
   end;
 end.
 
