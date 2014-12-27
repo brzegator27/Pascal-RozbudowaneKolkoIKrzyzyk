@@ -7,9 +7,11 @@ interface
 uses ListaPodwojnieWiazana;
 
 type WezelP = ^Wezel;
+type DaneGP = ^DaneG;
 
 
 //Deklaracje funkcji:
+function inicjalizujDG(wezel : WezelP; stopien : integer; wartosc : integer; ruch : array of integer; kogoRuch : integer) : integer;
 function dodajW() : WezelP;
 function dodajPW(wezel : WezelP; Nr : integer) : WezelP;
 function usunW(wezel : WezelP) : integer;
@@ -20,26 +22,33 @@ function wypiszW(od : WezelP) : integer; overload;
 //Sekcja prywatna
 implementation
 
-//Funkcja inicjalizujaca dane typu 'DaneG'dla danego wezla
-function inicjalizujDG(wezel : WezelP; stopien : integer; wartosc : integer; ruch : array of integer) : integer;
+//Funkcja inicjalizujaca dane typu 'DaneG' dla danego wezla
+function inicjalizujDG(wezel : WezelP; stopien : integer; wartosc : integer; ruch : array of integer; kogoRuch : integer) : integer;
 begin
   wezel^.DaneP^.Stopien := stopien;
   wezel^.DaneP^.Wartosc := wartosc;
   wezel^.DaneP^.Ruch := ruch;
+  wezel^.DaneP^.KogoRuch := kogoRuch;
 end;
 
 //Funkcja inicjalizujaca nowy wezel
 function dodajW() : WezelP;
-//var
+var danePW : DaneGP;
 begin
   //Tworzymy nowy obiekt typu Wezel
   new(dodajW);
   dodajW^.Podwezly := NIL;
+
+  //Tworzymy obiekt z danymi potrzebnymi do zarzadzania grafem z poziomu programu
+  //W tym celu tworzy obiekt typu 'DaneG'
+  new(danePW);
+  //Wskaznik ten, po zakonczeniu wykonywania tej funkcji bedzie przechowywany bezposrednio w wezle
+  dodajW^.DaneP := danePW;
 end;
 
 //Funkcja dodajaca podwezel:
 function dodajPW(wezel : WezelP; Nr : integer) : WezelP;
-var nowyElement : ElementP; pomocniczy : ElementP;
+var nowyElement : ElementP; pomocniczy : ElementP; danePW : DaneGP;
 begin
   //Gdy wezel nie ma jeszcze zadnego podwezla:
   if wezel^.Podwezly = NIL then
@@ -57,8 +66,15 @@ begin
     dodajPW^.Nr := Nr;
     dodajPW^.Podwezly := NIL;
     dodajPW^.Dowiazanie := nowyElement;
+
+    //Tworzymy obiekt z danymi potrzebnymi do zarzadzania grafem z poziomu programu
+    //W tym celu tworzy obiekt typu 'DaneG'
+    new(danePW);
+    //Wskaznik ten, po zakonczeniu wykonywania tej funkcji bedzie przechowywany bezposrednio w wezle
+    dodajPW^.DaneP := danePW;
+
     wezel^.Podwezly^.Wezel := dodajPW;
-    Writeln('Podwezel dodany');
+    //Writeln('Podwezel dodany');
   end else
   //Gdy wezel ma juz jakies podwezly
     begin
@@ -83,6 +99,14 @@ begin
       dodajPW^.Nr := Nr;
       dodajPW^.Podwezly := NIL;
       dodajPW^.Dowiazanie := nowyElement;
+
+      //Tworzymy obiekt z danymi potrzebnymi do zarzadzania grafem z poziomu programu
+      //W tym celu tworzy obiekt typu 'DaneG'
+      new(danePW);
+      //Wskaznik ten, po zakonczeniu wykonywania tej funkcji bedzie przechowywany bezposrednio w wezle...
+      dodajPW^.DaneP := danePW;
+      //...przypisanie konkretnych wartosci pozostawiamy klientowi
+
       nowyElement^.Wezel := dodajPW;
       //Raczej zle - u gory dobrze
       //wezel^.Podwezly^.Wezel := dodajPW;
@@ -184,8 +208,8 @@ begin
   if od <> NIL then
   begin
     //Jesli stopien jest mniejszy od 1, czyli wypisywany element bedzie na samej gorze, to nie uzywamy strzaleczki
-    if stopien < 1 then Write(od^.Nr)
-    else Write(' -> ', od^.Nr);
+    if stopien < 1 then Write('(', od^.DaneP^.Ruch[0], ', ', od^.DaneP^.Ruch[1], ')')
+    else Write(' -> ', '(', od^.DaneP^.Ruch[0], ', ', od^.DaneP^.Ruch[1], ')');
 
     //Wypisujemy podwezly, korzystamy z pomocniczego wskaznika:
     pomocniczy := od^.Podwezly;

@@ -4,12 +4,38 @@ uses CRT, Drzewo, ListaPodwojnieWiazana;
 
 type planszaT = array of array of integer;
 //Tablica jednowymiarowa
-type tablicaJ = array of integer;
+type tablicaJ = array[0..1] of integer;
 
 ////////////////////////////////////////////////////////////////////////////////
 //Oznaczenia w tablicy zawierajacej stan gry:
 //0 - pole puste; 1 - kolko; 2 - krzyzyk
 ////////////////////////////////////////////////////////////////////////////////
+
+
+//Funkcja zmieniajaca stan planszy
+function zmienP(plansza : planszaT; ruch : array of integer; ktoRuszyl : integer) : integer;
+//var
+begin
+  plansza[ruch[0], ruch[1]] := ktoRuszyl;
+end;
+
+//Funkcja wypisujaca plansze
+function wypiszP(plansza : planszaT; wymiar : integer) : integer;
+var i1, i2 : integer;
+begin
+  //clrscr;
+  for i1 := 0 to wymiar - 1 do
+  begin
+    for i2 := 0 to wymiar - 1 do
+    begin
+      if plansza[i1, i2] = 0 then Write('.   ')
+        else if plansza[i1, i2] = 1 then Write('O   ')
+          else Write('X   ');
+    end;
+    //Pzejscie do nowej lini:
+    Writeln();
+  end;
+end;
 
 
 //Funckaj sprawdzajaca same przekatne
@@ -67,7 +93,7 @@ end;
 //Funkcja zwraca: 3 - gdy wystapi blad; 1,2 - w zaleznosci kto wygral, 0 - gdy sytuacja jest...
 //...nierozstrzygnieta
 function sprawdzP(plansza : planszaT; wymiaryP : integer; iloscW : integer) : integer;
-var i1, i2, i3, flaga1, flaga2 : integer;
+var i1, i2, i3 : integer;
 begin
   //Zerujemy na wszelki wypadek:
   sprawdzP := 0;
@@ -176,18 +202,18 @@ begin
 
   //Zaczynamy od elementu znajdujacego sie w lewym, gornym rogu - poruszamy sie zgodnie ze wskazowkami zegara
   //Sprawdzamy przylegle punkty powyzej
-  if b1 and b3 then if (plansza[punktP[0] - 1, punktP[1] - 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
-  if b1 then if (plansza[punktP[0] - 1, punktP[1]]) = 1 then begin szukajOtoczenia := 1; exit; end;
-  if b1 and b4 then if (plansza[punktP[0] - 1, punktP[1] + 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
+  if b1 and b3 then if (plansza[punktP[0] - 1, punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b1 then if (plansza[punktP[0] - 1, punktP[1]]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b1 and b4 then if (plansza[punktP[0] - 1, punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
 
-  if b4 then if (plansza[punktP[0], punktP[1] + 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
+  if b4 then if (plansza[punktP[0], punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
 
   //Sprawdzamy pnkty przylegle ponizej
-  if b2 and b4 then if (plansza[punktP[0] + 1, punktP[1] + 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
-  if b2 then if (plansza[punktP[0] + 1, punktP[1]]) = 1 then begin szukajOtoczenia := 1; exit; end;
-  if b2 and b3 then if (plansza[punktP[0] + 1, punktP[1] - 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
+  if b2 and b4 then if (plansza[punktP[0] + 1, punktP[1] + 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b2 then if (plansza[punktP[0] + 1, punktP[1]]) <> 0 then begin szukajOtoczenia := 1; exit; end;
+  if b2 and b3 then if (plansza[punktP[0] + 1, punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
 
-  if b3 then if (plansza[punktP[0], punktP[1] - 1]) = 1 then begin szukajOtoczenia := 1; exit; end;
+  if b3 then if (plansza[punktP[0], punktP[1] - 1]) <> 0 then begin szukajOtoczenia := 1; exit; end;
 end;
 
 //Funkcja sprawdzajaca mozliwe ruchy - podaje jeden wedlug ustalonego schematu
@@ -199,20 +225,54 @@ function szukajRuchu(plansza : planszaT; ostatni : array of integer; wymiaryP : 
 //...moc przekazywac argumenty do funkcji 'szukajOtocznia'
 var i1, i2 : integer; rezultat, pomocnicza : array[0..1] of integer;
 begin
-  //Na poczatek jako zwracany element ustawiamy pierwszy element planszy, na wypadek...
-  //...gdybysmy nie znalexli innego, ktoryby spelanial warunki
-  rezultat[0] := 0; rezultat[1] := 0;
+  //Jesli podany punkt znajduje sie poza tablica, to zwracamy blad czyli [-1, -1]
+  //UWAGA nie uwzgledniamy wartosci ujemnych!!!
+  if (ostatni[0] >= wymiaryP) or (ostatni[1] >= wymiaryP) then
+  begin
+    rezultat[0] := -1; rezultat[1] := -1;
+    szukajRuchu := rezultat;
+    exit;
+  end;
+
+  //Jesli jako ostatni zostal przekazany element o wspolzednych ujemnych to szukamy od pierwszego elementu,...
+  //...a tym poza glowna petla musimy sprawdzic, czy pierwszy element nam odpowiada, jesli tak to konczymy sprawdzanie,...
+  //...a jesli nie, to kontynujemy
+  pomocnicza[0] := 0; pomocnicza[1] := 0;
+  if (ostatni[0] < 0) or (ostatni[1] < 0) then
+  begin
+    if (szukajOtoczenia(plansza, pomocnicza, wymiaryP) = 1) and (plansza[pomocnicza[0], pomocnicza[1]] = 0) then
+    begin
+      rezultat[0] := 0; rezultat[1] := 0;
+      szukajRuchu := rezultat;
+      exit;
+    end;
+    //Po tej instrukcji if sprawdzamy dla wszystkich poza elementem [0, 0], ktory juz sprawdzilismy
+    ostatni[0] := 0; ostatni[1] := 0;
+  end;
+
+  //Na poczatek jako zwracany element ustawiamy na element spoza planszy, na wypadek...
+  //...gdybysmy nie znalexli takiego, ktoryby spelanial warunki, jest to rozumiane jako zwracanie bledu przez te funkcje
+  rezultat[0] := -1; rezultat[1] := -1;
   szukajRuchu := rezultat;
 
-  for i1 := 0 to wymiaryP - 1 do
+  //Szukamy od wiersza, w ktorym znajduje sie ostatnio znaleziony element
+  for i1 := ostatni[0] to wymiaryP - 1 do
   begin
     for i2 := 0 to wymiaryP - 1 do
     begin
-      pomocnicza[0] := i1; pomocnicza[1] := i2;
-      if szukajOtoczenia(plansza, pomocnicza, wymiaryP) then
+      //Sprawdzamy, czy przypadkiem [i1, i2] nie wskazuje na element będący przed elementem 'ostatni', lub...
+      //...na element 'ostatni':
+      if not((i1 = ostatni[0]) and (i2 <= ostatni[1])) then
       begin
-        szukajRuchu := pomocnicza;
-        exit;
+        pomocnicza[0] := i1; pomocnicza[1] := i2;
+        //Do sprawdzenia:
+        //Writeln('pomocnicza[0] := ', pomocnicza[0], '   pomocnicza[1] := ', pomocnicza[1]);
+        if (szukajOtoczenia(plansza, pomocnicza, wymiaryP) = 1) and (plansza[pomocnicza[0], pomocnicza[1]] = 0) then
+        begin
+          //Write('Tutaj2   ');
+          szukajRuchu := pomocnicza;
+          exit;
+        end;
       end;
     end;
   end;
@@ -221,34 +281,87 @@ end;
 
 
 //Funkcja do zarzadzania grafem
-
-
-
-
-//Funkcja zmieniajaca stan planszy
-function zmienP(plansza : planszaT; ruch : array of integer; ktoRuszyl : integer) : integer;
-//var
+function ZarzadzajG(korzen : WezelP) : integer;
+var ostatni : array[0..1] of integer;
 begin
-  plansza[ruch[0], ruch[1]] := ktoRuszyl;
+  if korzen = NIL then korzen := dodajW();
+
 end;
 
-//Funkcja wypisujaca plansze
-function wypiszP(plansza : planszaT; wymiar : integer) : integer;
-var i1, i2 : integer;
+
+//Funkcja usuwajaca z grafu niepotrzebne elementy po wykonanych ruchach:
+
+
+
+
+//Funkcja uzupelniajaca drzewo w podwezly - bedzie rekurencyjna(prawdopodobnie spowoduje to duzy narzut pamieci)
+//Opis zmiennych pobieranych przez funkcje:
+//'plansza' - plansza gry; 'wymiaryP' - wymiary tej planszy; 'wezel' - wskaznik do naszego wezla; 'stopienZ' - stopien zagniezdzenia...
+//...; 'kogoRuch' - mowi, kto ma teraz ruch; 'docelowySZ' - stopien zagniezdzenia, po ktorego osiagnieciu nie szukamy dalszych podwezlow...
+//...; 'iloscW' - wymagana ilosc takich samych "piokow" w lini, by wygrac, potrzebne do ocenienia, czy wezel jest wygrywajacy
+function UzupelnijG(plansza : planszaT; wymiaryP : integer; wezel : WezelP; stopienZ : integer; kogoRuch : integer; docelowySZ, iloscW : integer) : integer;
+//'stopienZ' - stopien zagniezdzenia
+var i1, czyWygrywajacy, kogoNastepnyRuch : integer; ruch : array[0..1] of integer; nowyWezel : WezelP;
 begin
-  clrscr;
-  for i1 := 0 to wymiar - 1 do
+  i1 := 0;
+  //Szukamy od poczatku planszy:
+  ruch[0] := -1; ruch[1] := -1;
+
+  if kogoRuch = 1 then kogoNastepnyRuch := 2 else kogoNastepnyRuch := 1;
+
+  while i1 <> -1 do
   begin
-    for i2 := 0 to wymiar - 1 do
+    //szukajRuchu(plansza : planszaT; ostatni : array of integer; wymiaryP : integer) : tablicaJ;
+    //Write('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1], ';     ');
+    ruch := szukajRuchu(plansza, ruch, wymiaryP);
+    //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
+    if (ruch[0] <> -1) and (ruch[1] <> -1) then
     begin
-      if plansza[i1, i2] = 0 then Write('.   ')
-        else if plansza[i1, i2] = 1 then Write('O   ')
-          else Write('X   ');
+      //function dodajPW(wezel : WezelP; Nr : integer) : WezelP;
+      nowyWezel := dodajPW(wezel, i1);
+      //Zmieniamy plansze
+      zmienP(plansza, ruch, kogoRuch);
+      czyWygrywajacy := SprawdzP(plansza, wymiaryP, iloscW);
+      //if czyWygrywajacy <> 0 then Writeln(czyWygrywajacy);
+      //function inicjalizujDG(wezel : WezelP; stopien : integer; wartosc : integer; ruch : array of integer; kogoRuch : integer) : integer;
+      inicjalizujDG(nowyWezel, stopienZ, czyWygrywajacy, ruch, kogoRuch);
+      //Writeln('!!!!!!ruch[0] := ', [0], '   ruch[1] := ', ruch[1]);
+      //Jesli oczekuje sie wiekszego zagniezdzenia wezlow szukamy podwezlow dla nowo znalezionego wezla:
+      if (stopienZ < docelowySZ) and (czyWygrywajacy = 0) then
+      begin
+        UzupelnijG(plansza, wymiaryP, nowyWezel, stopienZ + 1, kogoNastepnyRuch, docelowySZ, iloscW);
+      end;
+      //Spowrotem zmieniamy plansze:
+      zmienP(plansza, ruch, 0);
+      //wypiszP(plansza, wymiaryP);
+      //Writeln();
+
+      //Przesowamy o 1 pole w bok, jesli dochodzimy do krawedzi to schodzimy w dol:
+      {if ruch[1] = wymiaryP - 1 then
+      begin
+        ruch[0] := ruch[0] + 1;
+        ruch[1] := 0;
+      end else
+      begin
+        ruch[1] := ruch[1] + 1;
+      end;}
+      i1 := i1 + 1;
+    end else
+    begin
+      i1 := -1;
+      exit;
     end;
-    //Pzejscie do nowej lini:
-    Writeln();
   end;
 end;
+
+
+//Funkcja szukajaca najlepszej scierzki w drzewie - rekurencja
+
+
+
+
+//Funkcja sprawdzajaca, czy przy danym stanie gry dany ruch jest dozwolony
+
 
 
 
@@ -256,6 +369,8 @@ end;
 var
   //Wymiar planszy:
   n, k : integer;
+  //Zmienna do przechowywania, wartosci mowiacej o tym, kogo jest obecnie ruch
+  b : integer;
   //Zmienna na przechowywanie dycyzji gracza o jego ruchu:
   ruch : array[0..1] of integer;
   //Korzen drzewa - globalnie bo nie chcemy po kazdym ruchu ktorego z graczy tworzyc go od nowa
@@ -269,8 +384,12 @@ begin
   n := 4;
   Setlength(plansza, n, n);
 
+  korzen := dodajW();
+
   //Zmienna 'k' do sterowaniu przebiegiem petli while
-  k := 6;
+  k := 10;
+
+  b := 1;
 
   while k <> 0 do
   begin
@@ -280,10 +399,19 @@ begin
     Writeln('Szukamy ruchu: ', (szukajRuchu(plansza, ruch, n))[0], '  ', (szukajRuchu(plansza, ruch, n))[1]);
     Write('Podaj jaki ruch chcesz wykonac: ');
     Read(ruch[0], ruch[1]);
-    zmienP(plansza, ruch, 1);
+    zmienP(plansza, ruch, b);
+    if b = 1 then b := 2 else b:= 1;
+
+    //UzupelnijG(plansza : planszaT; wymiaryP : integer; wezel : WezelP; stopienZ : integer; kogoRuch : integer; docelowySZ, iloscW : integer) : integer;
+    UzupelnijG(plansza, n, korzen, 0, 1, 7, 3);
+    //wypiszW(korzen);
+    usunW(korzen);
+    korzen := dodajW();
 
     k := k - 1;
   end;
+  wypiszW(korzen);
+  Read(k);
 end.
 
 

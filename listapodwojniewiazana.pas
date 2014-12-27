@@ -14,7 +14,7 @@ Element = record
   end;
 
 /////////////////////////////////////////////////////////////////////////////////////////
-//UWAGA Pascal jest kiepski i deklaracja rekordu Wezel musiala sie znalezc tutaj!!!
+//UWAGA Pascal jest taki, jaki jest i deklaracja rekordu Wezel musiala sie znalezc tutaj!!!
 /////////////////////////////////////////////////////////////////////////////////////////
 Wezel = record
   Nr : Integer;
@@ -37,6 +37,8 @@ DaneG = record
   Wartosc : integer;
   //Dane o ruchu
   Ruch : array[0..1] of integer;
+  //Dane o tym, kto ruszyl
+  KogoRuch : integer;
 end;
 
 /////////////////////////////////////////////////////////////////////////////////////////
