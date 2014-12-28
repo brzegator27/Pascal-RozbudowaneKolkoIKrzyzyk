@@ -189,6 +189,7 @@ begin
     end;
 end;
 
+//Wersja zmodyfikowana pod program Roz. K. i K. - wypisuje inne wartosci
 //Funkcja przedstawiajaca strukture grafu w sposob tekstowy, poczynajac od wezla podanego przez wskaznik
 //Zmienna 'stopien' mowi jak bardzo jestesmy zagniezdzeni z elementem na ktory wskazuje wskaznik 'od'
 //wzgledem pierwotnego elementu

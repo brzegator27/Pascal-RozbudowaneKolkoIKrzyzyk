@@ -74,7 +74,7 @@ begin
     dodajPW^.DaneP := danePW;
 
     wezel^.Podwezly^.Wezel := dodajPW;
-    Writeln('Podwezel dodany');
+    //Writeln('Podwezel dodany');
   end else
   //Gdy wezel ma juz jakies podwezly
     begin
