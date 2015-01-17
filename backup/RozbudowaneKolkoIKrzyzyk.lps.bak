@@ -12,9 +12,10 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="376"/>
-        <CursorPos X="5" Y="410"/>
-        <UsageCount Value="68"/>
+        <TopLine Value="678"/>
+        <CursorPos X="8" Y="601"/>
+        <FoldState Value=" TMt504 TLv12d1m"/>
+        <UsageCount Value="80"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -24,8 +25,8 @@
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="255"/>
-        <CursorPos X="1" Y="135"/>
-        <UsageCount Value="68"/>
+        <CursorPos X="7" Y="255"/>
+        <UsageCount Value="80"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -34,9 +35,9 @@
         <UnitName Value="ListaPodwojnieWiazana"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="111"/>
-        <CursorPos X="3" Y="22"/>
-        <UsageCount Value="68"/>
+        <TopLine Value="67"/>
+        <CursorPos X="13" Y="50"/>
+        <UsageCount Value="80"/>
         <Loaded Value="True"/>
       </Unit2>
     </Units>
@@ -46,123 +47,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="297" Column="8" TopLine="260"/>
+        <Caret Line="326" Column="24" TopLine="290"/>
       </Position1>
       <Position2>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="281" Column="13" TopLine="258"/>
+        <Caret Line="318" Column="30" TopLine="301"/>
       </Position2>
       <Position3>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="287" Column="13" TopLine="264"/>
+        <Caret Line="351" Column="16" TopLine="319"/>
       </Position3>
       <Position4>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="38" Column="5" TopLine="1"/>
+        <Caret Line="369" Column="26" TopLine="350"/>
       </Position4>
       <Position5>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="307" Column="13" TopLine="284"/>
+        <Caret Line="458" Column="110" TopLine="373"/>
       </Position5>
       <Position6>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="379" Column="19" TopLine="356"/>
+        <Caret Line="462" Column="43" TopLine="447"/>
       </Position6>
       <Position7>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="307" Column="24" TopLine="284"/>
+        <Caret Line="463" Column="5" TopLine="438"/>
       </Position7>
       <Position8>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="223" Column="21" TopLine="200"/>
+        <Caret Line="468" Column="19" TopLine="432"/>
       </Position8>
       <Position9>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="237" Column="18" TopLine="200"/>
+        <Caret Line="469" Column="5" TopLine="448"/>
       </Position9>
       <Position10>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="248" Column="14" TopLine="209"/>
+        <Caret Line="395" Column="1" TopLine="372"/>
       </Position10>
       <Position11>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="265" Column="22" TopLine="227"/>
+        <Caret Line="466" Column="7" TopLine="441"/>
       </Position11>
       <Position12>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="306" Column="18" TopLine="267"/>
+        <Caret Line="344" Column="53" TopLine="324"/>
       </Position12>
       <Position13>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="307" Column="10" TopLine="288"/>
+        <Caret Line="333" Column="113" TopLine="310"/>
       </Position13>
       <Position14>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="379" Column="40" TopLine="357"/>
+        <Caret Line="468" Column="41" TopLine="445"/>
       </Position14>
       <Position15>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="326" Column="24" TopLine="290"/>
+        <Caret Line="507" Column="109" TopLine="489"/>
       </Position15>
       <Position16>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="318" Column="30" TopLine="301"/>
+        <Caret Line="494" Column="84" TopLine="489"/>
       </Position16>
       <Position17>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="351" Column="16" TopLine="319"/>
+        <Caret Line="480" Column="16" TopLine="452"/>
       </Position17>
       <Position18>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="369" Column="26" TopLine="350"/>
+        <Caret Line="496" Column="18" TopLine="473"/>
       </Position18>
       <Position19>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="458" Column="110" TopLine="373"/>
+        <Caret Line="497" Column="15" TopLine="474"/>
       </Position19>
       <Position20>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="408" Column="129" TopLine="438"/>
+        <Caret Line="508" Column="21" TopLine="485"/>
       </Position20>
       <Position21>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="393" Column="55" TopLine="435"/>
+        <Caret Line="492" Column="142" TopLine="486"/>
       </Position21>
       <Position22>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="462" Column="43" TopLine="447"/>
+        <Caret Line="509" Column="29" TopLine="486"/>
       </Position22>
       <Position23>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="463" Column="5" TopLine="438"/>
+        <Caret Line="512" Column="5" TopLine="488"/>
       </Position23>
       <Position24>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="468" Column="19" TopLine="432"/>
+        <Caret Line="491" Column="76" TopLine="459"/>
       </Position24>
       <Position25>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="469" Column="5" TopLine="448"/>
+        <Caret Line="625" Column="1" TopLine="533"/>
       </Position25>
       <Position26>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="395" Column="1" TopLine="372"/>
+        <Caret Line="684" Column="50" TopLine="670"/>
       </Position26>
       <Position27>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="466" Column="7" TopLine="441"/>
+        <Caret Line="702" Column="112" TopLine="669"/>
       </Position27>
       <Position28>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="344" Column="53" TopLine="324"/>
+        <Caret Line="455" Column="7" TopLine="427"/>
       </Position28>
       <Position29>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="333" Column="113" TopLine="310"/>
+        <Caret Line="508" Column="16" TopLine="486"/>
       </Position29>
       <Position30>
         <Filename Value="RozbudowaneKolkoIKrzyzyk.lpr"/>
-        <Caret Line="468" Column="41" TopLine="445"/>
+        <Caret Line="558" Column="53" TopLine="530"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
