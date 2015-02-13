@@ -23,9 +23,16 @@ end;
 function wypiszP(plansza : planszaT; wymiar : integer) : integer;
 var i1, i2 : integer;
 begin
+  Write('    ');
   //clrscr;
   for i1 := 0 to wymiar - 1 do
   begin
+    if i1 > 9 then Write(i1, '  ') else Write(i1, '   ');
+  end;
+  Writeln(); Writeln();
+  for i1 := 0 to wymiar - 1 do
+  begin
+    if i1 > 9 then Write(i1, '   ') else Write(' ', i1, '   ');
     for i2 := 0 to wymiar - 1 do
     begin
       if plansza[i1, i2] = 0 then Write('.   ')
@@ -180,8 +187,20 @@ begin
   end;
 end;
 
+Function czyRemis(plansza : planszaT; wymiaryP : integer) : integer;
+var i, j : integer;
+begin
+  czyRemis := 1;
+  for i := 0 to wymiaryP - 1 do
+  begin
+    for j := 0 to wymiaryP - 1 do
+    begin
+      if plansza[i, j] = 0 then czyRemis := -1;
+    end;
+  end;
+end;
 
-//Funkcja sprawdzajaca, czy w totczeniu podanego punktu znajduja sie inne punkty
+//Funkcja sprawdzajaca, czy w ototczeniu podanego punktu znajduja sie inne punkty
 //'punktP' - punkt na planszy
 //Zwracane wartosci: 1 - otoczenie istnieje; 0 - otoczenie nie istnieje
 function szukajOtoczenia(plansza : planszaT; punktP : array of integer; wymiaryP : integer) : integer;
@@ -279,22 +298,7 @@ begin
 end;
 
 
-
-{//Funkcja do zarzadzania grafem
-function ZarzadzajG(korzen : WezelP) : integer;
-var ostatni : array[0..1] of integer;
-begin
-  if korzen = NIL then korzen := dodajW();
-
-end;}
-
-
-//Funkcja usuwajaca z grafu niepotrzebne elementy po wykonanych ruchach:
-
-
-
-
-//Funkcja uzupelniajaca drzewo w podwezly - bedzie rekurencyjna(prawdopodobnie spowoduje to duzy narzut pamieci)
+{//Funkcja uzupelniajaca drzewo w podwezly - bedzie rekurencyjna(prawdopodobnie spowoduje to duzy narzut pamieci)
 //Opis zmiennych pobieranych przez funkcje:
 //'plansza' - plansza gry; 'wymiaryP' - wymiary tej planszy; 'wezel' - wskaznik do naszego wezla; 'stopienZ' - stopien zagniezdzenia...
 //...; 'kogoRuch' - mowi, kto ma teraz ruch; 'docelowySZ' - stopien zagniezdzenia, po ktorego osiagnieciu nie szukamy dalszych podwezlow...
@@ -349,10 +353,10 @@ begin
       exit;
     end;
   end;
-end;
+end;}
 
 
-//Funkcja zliczajaca ilosc wezlow wygrywajacych dla danego gracza w sciezkach wychodzacych z danego wezla
+{//Funkcja zliczajaca ilosc wezlow wygrywajacych dla danego gracza w sciezkach wychodzacych z danego wezla
 function iloscWW(wezel : WezelP; dlaGracza : integer) : integer;
 //'podwezel' - wskaznik pomocniczy;
 var podwezel : ElementP;
@@ -412,7 +416,7 @@ begin
     //Przesowamy wskaznik
     podwezel := podwezel^.Nast;
   end;
-end;
+end;}
 
 
 
@@ -526,8 +530,42 @@ end;
 //...; 'iloscW' - wymagana ilosc takich samych "piokow" w lini, by wygrac, potrzebne do ocenienia, czy wezel jest wygrywajacy
 function SzukajR(plansza : planszaT; wymiaryP : integer; docelowySZ, iloscW, kimGramy : integer) : TablicaJ;
 //'stopienZ' - stopien zagniezdzenia
-var i1, i2, i3, czyWygrywajacy, kogoNastepnyRuch, stopienZ : integer; ruch : array[0..1] of integer; korzen, nowyWezel, pomW: WezelP; pomE : ElementP;
+var i1, i2, i3, czyWygrywajacy, kogoNastepnyRuch, stopienZ : integer; ruch, ruchNieDlaNas : array[0..1] of integer; korzen, nowyWezel, pomW: WezelP; pomE : ElementP;
 begin
+  //Poczatkowo ustawiamy na -1 -1:
+  ruch[0] := -1; ruch[1] := -1;
+
+  //Sprawdzamy, czy pierwszy ruch nie jest dla nas wygrywajacy:
+  while i1 <> -1 do
+  begin
+    //szukajRuchu(plansza : planszaT; ostatni : array of integer; wymiaryP : integer) : tablicaJ;
+    //Write('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1], ';     ');
+    ruch := szukajRuchu(plansza, ruch, wymiaryP);
+    //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
+    if (ruch[0] <> -1) and (ruch[1] <> -1) then
+    begin
+      //Zmieniamy plansze
+      zmienP(plansza, ruch, kimGramy);
+      czyWygrywajacy := SprawdzP(plansza, wymiaryP, iloscW);
+
+      //Spowrotem zmieniamy plansze:
+      zmienP(plansza, ruch, 0);
+
+      //Jesli ruch jest wygrywajacy dla ktoregos z graczy, to nie szukamy juz dalszych podwezlow, bo wybieramy wlasnie ten
+      if czyWygrywajacy = kimGramy then
+      begin
+        i1 := -1;
+        SzukajR := ruch;
+        exit;
+      end;
+    end else
+    begin
+      i1 := -1;
+    end;
+  end;
+
+  //Jesli nie znalexlismy szukamy dalej w drzewie:
+
   korzen := dodajW();
   korzen^.Nr := 0;
 
@@ -544,10 +582,10 @@ begin
     if (ruch[0] <> -1) and (ruch[1] <> -1) then
     begin
       i1 := docelowySZ;
-      Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
+      //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
     end;
     i1 := i1 + 1;
-    Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
+    //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
   end;
 
   if (ruch[0] <> -1) and (ruch[1] <> -1) then
@@ -558,108 +596,7 @@ begin
     SzukajR := szukajRuchu(plansza, ruch, wymiaryP);
   end;
   //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
-
-  //i1 := 1 bo dla pierwszego stopnia sprawdzamy poza glowana petla
-  {i1 := 1;
-  stopienZ := 0;
-
-  if kogoRuch = 1 then kogoNastepnyRuch := 2 else kogoNastepnyRuch := 1;}
-
-  //Najpierwsz szukamy dla pierwszego ruchu
-  //SzukajRwP(plansza : planszaT; wymiaryP : integer; wezel : WezelP; stopienZ : integer; kogoRuch : integer; iloscW : integer) : WezelP;
-  //nowyWezel := szukajRwP(plansza, wymiaryP, korzen, stopienZ + 1, kogoNastepnyRuch, iloscW);
-
-  {//Pozniej szukamy dla drugiego i kolejnych
-  if nowyWezel = NIL then
-  begin
-    while i1 < docelowySZ do
-    begin
-
-       pomE := korzen^.Podwezly
-       while pomE <> NIL do
-       begin
-         i2 := 0;
-         while i2 < i1 do
-         begin
-           pomE := pomE^.Wezel^.Podwezly;
-
-           pomE := pomE^.Nast;
-
-           while
-           begin
-
-           end;
-         end;
-         pomE := pomE^.Nast;
-       end;
-    end;
-  end else
-  begin
-    szukajR := nowyWezel^.DaneP^.Ruch;
-  end;
-
-  end;}
-
-
-  {while i1 <> -1 do
-  begin
-    //szukajRuchu(plansza : planszaT; ostatni : array of integer; wymiaryP : integer) : tablicaJ;
-    //Write('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1], ';     ');
-    ruch := szukajRuchu(plansza, ruch, wymiaryP);
-    //Writeln('ruch[0] := ', ruch[0], '   ruch[1] := ', ruch[1]);
-    if (ruch[0] <> -1) and (ruch[1] <> -1) then
-    begin
-      //function dodajPW(wezel : WezelP; Nr : integer) : WezelP;
-      nowyWezel := dodajPW(wezel, i1);
-      //Zmieniamy plansze
-      zmienP(plansza, ruch, kogoRuch);
-      czyWygrywajacy := SprawdzP(plansza, wymiaryP, iloscW);
-
-      //if czyWygrywajacy <> 0 then Writeln(czyWygrywajacy);
-      //function inicjalizujDG(wezel : WezelP; stopien : integer; wartosc : integer; ruch : array of integer; kogoRuch : integer) : integer;
-      inicjalizujDG(nowyWezel, stopienZ, czyWygrywajacy, ruch, kogoRuch);
-      //Writeln('!!!!!!ruch[0] := ', [0], '   ruch[1] := ', ruch[1]);
-      //Jesli oczekuje sie wiekszego zagniezdzenia wezlow szukamy podwezlow dla nowo znalezionego wezla:
-      if (stopienZ < docelowySZ) and (czyWygrywajacy = 0) then
-      begin
-        UzupelnijG(plansza, wymiaryP, nowyWezel, stopienZ + 1, kogoNastepnyRuch, docelowySZ, iloscW, kimNieGramy);
-      end;
-      //Spowrotem zmieniamy plansze:
-      zmienP(plansza, ruch, 0);
-      //wypiszP(plansza, wymiaryP);
-      //Writeln();
-
-      i1 := i1 + 1;
-
-      //Jesli ruch jest wygrywajacy dla przeciwnika, to nie szukamy juz dalszych podwezlow, bo uzytkownik napewno wybierze ten,...
-      //...najgorszy dla nas wiec dalsze sprawdzanie nie ma sensu
-      if czyWygrywajacy = kimNieGramy then i1 := -1;
-
-    end else
-    begin
-      i1 := -1;
-      exit;
-    end;
-  end;}
 end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //Funkcja sprawdzajaca, czy przy danym stanie gry dany ruch jest dozwolony
@@ -671,7 +608,7 @@ end;
 var
   //Wymiar planszy, k - sterowaniem przebiegiem petli, l - ilosc potrzebnych tych samych znakow w lini by ktos wygral:
   //m - zmienna pomocnicza
-  n, k, l, m: integer;
+  n, k, l, m, w, koniec: integer;
   //Zmienna do przechowywania, wartosci mowiacej o tym, kogo jest obecnie ruch
   b : integer;
   //Zmienna na przechowywanie dycyzji gracza o jego ruchu:
@@ -684,44 +621,62 @@ var
 
 
 begin
-  Writeln('Jakis tekst');
-  n := 10;
-  Setlength(plansza, n, n);
+  n := 3;
 
-  korzen := dodajW();
+  //korzen := dodajW();
 
-  l := 5;
+  l := 3;
   m := 3;
   //Zmienna 'k' do sterowaniu przebiegiem petli while
-  k := 16;
+  k := 0;
 
   b := 1;
 
-  while k <> 0 do
+  koniec := 0;
+
+  Write('Podaj jakich wymiarow ma byc plansza: '); Readln(n);
+  Write('Podaj ile znakow potrzeba do wygranej: '); Readln(l);
+
+  Setlength(plansza, n, n);
+
+  clrscr();
+
+  while k <> -1 do
   begin
-    wypiszP(plansza, n);
-    Writeln('Wygral ', SprawdzP(plansza, n, l));
-    ruch[0] := 0; ruch[1] := 0;
-    //Writeln('Szukamy ruchu: ', (szukajRuchu(plansza, ruch, n))[0], '  ', (szukajRuchu(plansza, ruch, n))[1]);
-    Write('Podaj jaki ruch chcesz wykonac: ');
-    Read(ruch[0], ruch[1]);
-    zmienP(plansza, ruch, b);
+    w := w + 1;
+    k := SprawdzP(plansza, n, l);
+    if (k = 0) or (k = 3) then
+    begin
 
-    //UzupelnijG(plansza : planszaT; wymiaryP : integer; wezel : WezelP; stopienZ : integer; kogoRuch : integer; docelowySZ, iloscW, kimNieGramy : integer) : integer;
-      UzupelnijG(plansza, n, korzen, 0, 3, 2, m, 1);
-      //wypiszW(korzen);
-
-      if k = 16 - 4 then m := l;
-      najlepszyRuch := najlepszaS(korzen, 2);
-      //Writeln('Najlepszy ruch dla O to: ', najlepszyRuch^.DaneP^.Ruch[0], ', ', najlepszyRuch^.DaneP^.Ruch[1]);
-      ruch[0] := najlepszyRuch^.DaneP^.Ruch[0]; ruch[1] := najlepszyRuch^.DaneP^.Ruch[1];
-
+    ruch[0] := -1; ruch[1] := -1;
+    //Sprawdzamy, czy jest remis:
+    if koniec = 1 then
+    begin
+      clrscr();
+      wypiszP(plansza, n); Writeln();
+      //Mamy remis więc:
+      Writeln('Remis :/'); k := -1;
+    //Jesli ruch uzyszkodnika:
+    end else if (w mod 2) = 1 then
+    begin
+      clrscr();
+      wypiszP(plansza, n);
+      //Writeln('Szukamy ruchu: ', (szukajRuchu(plansza, ruch, n))[0], '  ', (szukajRuchu(plansza, ruch, n))[1]);
+      Write('Podaj jaki ruch chcesz wykonac: ');
+      Read(ruch[0], ruch[1]);
+      zmienP(plansza, ruch, b);
+    end else
+    begin
       //SzukajR(plansza : planszaT; wymiaryP : integer; docelowySZ, iloscW, kimGramy : integer) : TablicaJ;
-      ruch1 := SzukajR(plansza, n, 4, l, 2);
-      Writeln('Najlepszy ruch dla X to: ', ruch1[0], ', ', ruch1[1]);
-      zmienP(plansza, ruch, 2);
-      usunW(korzen);
-      korzen := dodajW();
+      if czyRemis(plansza, n) <> 1 then
+      begin
+      ruch1 := SzukajR(plansza, n, 5, l, 2);
+      //Writeln('Najlepszy ruch dla X to: ', ruch1[0], ', ', ruch1[1])
+      zmienP(plansza, ruch1, 2);
+      end else koniec := 1;
+    end;
+      //usunW(korzen);
+      //korzen := dodajW();
 
     {if b = 1 then b := 2 else b:= 1;
 
@@ -737,10 +692,15 @@ begin
       usunW(korzen);
       korzen := dodajW();
     end;}
-
-    k := k - 1;
+    end else
+    begin
+      clrscr();
+      wypiszP(plansza, n); Writeln();
+      Writeln('Wygral: ', k, '!');
+      k := -1;
+    end;
   end;
-  wypiszW(korzen);
+  Writeln('Wpisz dowolny znak, by zakonczyc... ');
   Read(k);
 end.
 
