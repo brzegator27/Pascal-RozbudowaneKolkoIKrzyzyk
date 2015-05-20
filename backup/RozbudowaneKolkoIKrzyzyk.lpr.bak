@@ -652,6 +652,8 @@ begin
     //Sprawdzamy, czy jest remis:
     if koniec = 1 then
     begin
+      clrscr();
+      wypiszP(plansza, n); Writeln();
       //Mamy remis więc:
       Writeln('Remis :/'); k := -1;
     //Jesli ruch uzyszkodnika:
